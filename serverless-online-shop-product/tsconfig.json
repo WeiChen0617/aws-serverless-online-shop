@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"preserveConstEnums": true,
+		"strictNullChecks": true,
+		"sourceMap": true,
+		"target": "esnext",
+		"outDir": ".build",
+		"moduleResolution": "node",
+		"rootDir": "./",
+		"lib": [
+			"DOM",
+			"es2015",
+			"es2016",
+			"es2017",
+			"esnext"
+		], 
+		"noImplicitAny": true,
+		"esModuleInterop": true
+	}
+}

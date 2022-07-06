@@ -1,0 +1,100 @@
+service: serverless-online-shop-product
+
+frameworkVersion: '3'
+
+custom:
+  table: product-table
+  output:
+    file: .serverless/output.json  
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-stack-output
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: ${opt:stage,'dev'}
+  region: eu-west-2
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: '*'
+          Resource: '*'
+
+
+functions:
+  getProductList:
+    handler: src/getProductList.handler
+    events:
+        - http:
+            path: /product
+            method: GET
+            cors: true
+  getProduct:
+    handler: src/getProduct.handler
+    events:
+        - http:
+            path: /product/{id}
+            method: GET
+            cors: true
+  updateProduct:
+    handler: src/updateProduct.handler
+    events:
+        - http:
+            path: /product/{id}
+            method: PUT
+            cors: true
+  deleteProduct:
+      handler: src/deleteProduct.handler
+      events:
+        - http:
+            path: /product/{id}
+            method: DELETE
+            cors: true
+  createProduct:
+      handler: src/createProduct.handler
+      events:
+        - http:
+            path: /product
+            method: POST
+            cors: true
+  
+resources:
+  Resources:
+    ProductTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        TableName: ${self:custom.table}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        # ProvisionedThroughput:
+        #   ReadCapacityUnits: 5
+        #   WriteCapacityUnits: 5
+        # Set the capacity to auto-scale
+        BillingMode: PAY_PER_REQUEST 
+
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+  Outputs:
+    ApiUrl:
+      Description: "The API Gateway URL"
+      Value:
+        Fn::Join:
+          - ""
+          - - "https://"
+            - Ref: ApiGatewayRestApi
+            - ".execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}"
