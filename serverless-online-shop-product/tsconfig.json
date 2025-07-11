@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"preserveConstEnums": true,
-		"strictNullChecks": true,
+		"strict": true,
 		"sourceMap": true,
 		"target": "esnext",
 		"outDir": ".build",
@@ -15,6 +15,11 @@
 			"esnext"
 		], 
 		"noImplicitAny": true,
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"incremental": true
 	}
 }
